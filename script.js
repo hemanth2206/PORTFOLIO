@@ -1,20 +1,32 @@
-// Mobile Navigation Toggle
-const burger = document.querySelector('.burger');
-const nav = document.querySelector('.nav-links');
+const revealTargets = document.querySelectorAll("[data-reveal]");
 
-if(burger) {
-    burger.addEventListener('click', () => {
-        nav.classList.toggle('nav-active');
-        burger.classList.toggle('toggle');
-    });
-}
+const observer = new IntersectionObserver(
+	(entries) => {
+		entries.forEach((entry) => {
+			if (entry.isIntersecting) {
+				entry.target.classList.add("is-visible");
+				observer.unobserve(entry.target);
+			}
+		});
+	},
+	{ threshold: 0.2 }
+);
 
-// Smooth Scrolling for links
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        document.querySelector(this.getAttribute('href')).scrollIntoView({
-            behavior: 'smooth'
-        });
-    });
+revealTargets.forEach((target) => observer.observe(target));
+
+document.querySelectorAll('a[href^="#"]').forEach((link) => {
+	link.addEventListener("click", (event) => {
+		const targetId = link.getAttribute("href");
+		if (!targetId || targetId === "#") {
+			return;
+		}
+
+		const target = document.querySelector(targetId);
+		if (!target) {
+			return;
+		}
+
+		event.preventDefault();
+		target.scrollIntoView({ behavior: "smooth", block: "start" });
+	});
 });
